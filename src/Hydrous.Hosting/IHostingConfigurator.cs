@@ -15,6 +15,13 @@ namespace Hydrous.Hosting
 {
     using System;
 
+    public class Credentials
+    {
+        public Credentials()
+        {
+            
+        }
+    }
     public interface IHostingConfigurator<T>
     {
         /// <summary>
@@ -67,5 +74,7 @@ namespace Hydrous.Hosting
         /// By default if no action is provided the shutdown action is invoked.
         /// </remarks>
         IHostingConfigurator<T> WhenShutdown(Action<T> callback);
+
+        IHostingConfigurator<T> RunAs(Credentials credentials);
     }
 }
