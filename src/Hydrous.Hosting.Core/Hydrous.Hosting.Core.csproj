@@ -38,8 +38,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scanning\DirectoryScanner.cs" />
+    <Compile Include="Scanning\IServiceScanner.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Hydrous.Hosting\Hydrous.Hosting.csproj">
+      <Project>{2D8678D8-76C9-4EE0-851C-A640C969967F}</Project>
+      <Name>Hydrous.Hosting</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
