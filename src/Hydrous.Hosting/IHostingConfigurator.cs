@@ -14,14 +14,6 @@
 namespace Hydrous.Hosting
 {
     using System;
-
-    public class Credentials
-    {
-        public Credentials()
-        {
-            
-        }
-    }
     public interface IHostingConfigurator<T>
     {
         /// <summary>
@@ -75,6 +67,11 @@ namespace Hydrous.Hosting
         /// </remarks>
         IHostingConfigurator<T> WhenShutdown(Action<T> callback);
 
+        /// <summary>
+        /// Specifies the credentials that the service should run under
+        /// </summary>
+        /// <param name="credentials"></param>
+        /// <returns></returns>
         IHostingConfigurator<T> RunAs(Credentials credentials);
     }
 }

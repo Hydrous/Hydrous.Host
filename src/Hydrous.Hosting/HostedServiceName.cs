@@ -21,6 +21,7 @@ namespace Hydrous.Hosting
         {
             Name = name;
         }
+
         public string Name { get; set; }
     }
 }

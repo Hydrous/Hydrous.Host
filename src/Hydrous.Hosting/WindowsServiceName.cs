@@ -22,6 +22,11 @@ namespace Hydrous.Hosting
             Name = name;
         }
 
-        public string Name { get; set; }
+        public string Name { get; private set; }
+
+        public static readonly WindowsServiceName Msmq = new WindowsServiceName("MSMQ");
+        public static readonly WindowsServiceName SqlServer = new WindowsServiceName("MSSQLSERVER");
+        public static readonly WindowsServiceName IIS = new WindowsServiceName("W3SVC");
+        public static readonly WindowsServiceName EventLog = new WindowsServiceName("EventLog");
     }
 }
