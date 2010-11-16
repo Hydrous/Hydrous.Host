@@ -18,9 +18,11 @@ namespace Hydrous.Host
     using System.Linq;
     using System.Text;
     using System.ServiceProcess;
+using log4net;
 
     public class HydrousService : ServiceBase
     {
+        static readonly ILog log = LogManager.GetLogger(typeof(HydrousService));
         protected override void OnStart(string[] args)
         {
             base.OnStart(args);
