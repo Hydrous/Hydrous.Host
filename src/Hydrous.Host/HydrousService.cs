@@ -19,7 +19,7 @@ namespace Hydrous.Host
     using System.Text;
     using System.ServiceProcess;
     using log4net;
-using Hydrous.Hosting;
+    using Hydrous.Hosting;
 
     public class HydrousService : ServiceBase
     {
