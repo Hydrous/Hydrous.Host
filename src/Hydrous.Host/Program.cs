@@ -18,27 +18,60 @@ namespace Hydrous.Host
     using System.Linq;
     using System.Text;
     using System.ServiceProcess;
+    using log4net;
+    using Hydrous.Hosting;
 
     class Program
     {
+        static readonly ILog log = LogManager.GetLogger("Hydrous.Host");
+
+        [LoaderOptimization(LoaderOptimization.MultiDomain)]
         static void Main(string[] args)
         {
-            if (Environment.UserInteractive)
+            log4net.Config.XmlConfigurator.Configure();
+            using (var controller = ControllerFactory.Create())
             {
-                RunInteractive(args);
+                if (Environment.UserInteractive)
+                {
+                    Console.WriteLine("Starting up as console application.");
+                    RunInteractive(args, controller);
+                }
+                else
+                {
+                    // if we aren't interactive, then we should run as a service
+                    ServiceBase.Run(new HydrousService(controller));
+                }
             }
-            else
-            {
-                // if we aren't interactive, then we should run as a service
-                ServiceBase.Run(new HydrousService());
-            }
+
+            log.Debug("Everything complete. Exiting.");
         }
 
-        private static void RunInteractive(string[] args)
+        private static void RunInteractive(string[] args, IServiceController controller)
         {
-            // TODO: run with interactive console
-            // TODO: allow commands like stop [service], restart, start, etc
-            throw new NotImplementedException();
+            controller.Run();
+            bool shutdown = false;
+
+            while (!shutdown)
+            {
+                Console.WriteLine("Type cls to clear screen, or quit|exit to stop.");
+                string input = Console.ReadLine() ?? "";
+
+                switch (input.ToLowerInvariant())
+                {
+                    case "cls":
+                        Console.Clear();
+                        break;
+                    case "quit":
+                    case "exit":
+                        shutdown = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            Console.WriteLine("Shutting down application.");
+            controller.Shutdown();
         }
     }
 }

@@ -24,9 +24,9 @@ namespace Hydrous.Hosting
             Password = password;
         }
 
-        public string DomainName { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public string DomainName { get; private set; }
+        public string Username { get; private set; }
+        public string Password { get; private set; }
 
         public static readonly Credentials NetworkService = new Credentials("NT AUTHORITY", "NETWORK SERVICE", "");
         public static readonly Credentials LocalSystem = new Credentials("NT AUTHORITY", "SYSTEM", "");

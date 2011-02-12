@@ -18,23 +18,35 @@ namespace Hydrous.Host
     using System.Linq;
     using System.Text;
     using System.ServiceProcess;
-using log4net;
+    using log4net;
+using Hydrous.Hosting;
 
     public class HydrousService : ServiceBase
     {
         static readonly ILog log = LogManager.GetLogger(typeof(HydrousService));
+        readonly IServiceController Controller;
+
+        public HydrousService(IServiceController controller)
+        {
+            Controller = controller;
+        }
+
         protected override void OnStart(string[] args)
         {
-            base.OnStart(args);
+            log.Debug("Received start command from windows service host.");
+            Controller.Run();
         }
 
         protected override void OnStop()
         {
-            base.OnStop();
+            log.Debug("Received stop command from windows service host.");
+            Controller.Shutdown();
         }
+
         protected override void OnShutdown()
         {
-            base.OnShutdown();
+            log.Debug("Received shutdown command from windows service host.");
+            Controller.Shutdown();
         }
     }
 }
