@@ -2,12 +2,19 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hydrous.Host", "Hydrous.Host\Hydrous.Host.csproj", "{BE0FD8C0-7DF7-4199-94C9-918D378C543B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC} = {A004F3B7-60AC-4AAB-931C-0059FB30CBCC}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hydrous.Hosting", "Hydrous.Hosting\Hydrous.Hosting.csproj", "{2D8678D8-76C9-4EE0-851C-A640C969967F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hydrous.Hosting.Core", "Hydrous.Hosting.Core\Hydrous.Hosting.Core.csproj", "{0003448D-29AA-4E3A-88E6-C14F7FE996A2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hydrous.Hosting.Tests", "Hydrous.Hosting.Tests\Hydrous.Hosting.Tests.csproj", "{EBD3C4B5-E57F-461C-BED8-B1B31F80B059}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{9863BBEE-9976-43F7-9EB8-9980DE002783}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleClock", "SimpleClock\SimpleClock.csproj", "{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,8 +78,23 @@ Global
 		{EBD3C4B5-E57F-461C-BED8-B1B31F80B059}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EBD3C4B5-E57F-461C-BED8-B1B31F80B059}.Release|x64.ActiveCfg = Release|Any CPU
 		{EBD3C4B5-E57F-461C-BED8-B1B31F80B059}.Release|x86.ActiveCfg = Release|Any CPU
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}.Release|x64.ActiveCfg = Release|Any CPU
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC} = {9863BBEE-9976-43F7-9EB8-9980DE002783}
 	EndGlobalSection
 EndGlobal

@@ -16,6 +16,8 @@ namespace Hydrous.Hosting
     using System;
     public interface IHostingConfigurator<T>
     {
+        IHostingConfigurator<T> Create(Func<T> factory);
+
         /// <summary>
         /// Specifies the name that identifies the service
         /// </summary>

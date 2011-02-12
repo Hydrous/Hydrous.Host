@@ -20,7 +20,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -91,6 +91,10 @@
     <ProjectReference Include="..\Hydrous.Hosting.Core\Hydrous.Hosting.Core.csproj">
       <Project>{0003448D-29AA-4E3A-88E6-C14F7FE996A2}</Project>
       <Name>Hydrous.Hosting.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Hydrous.Hosting\Hydrous.Hosting.csproj">
+      <Project>{2D8678D8-76C9-4EE0-851C-A640C969967F}</Project>
+      <Name>Hydrous.Hosting</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

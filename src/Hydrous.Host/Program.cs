@@ -44,6 +44,7 @@ namespace Hydrous.Host
             }
 
             log.Debug("Everything complete. Exiting.");
+            System.Threading.Thread.Sleep(3000);
         }
 
         private static void RunInteractive(string[] args, IServiceController controller)

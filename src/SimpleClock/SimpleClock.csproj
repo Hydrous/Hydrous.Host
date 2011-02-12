@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2D8678D8-76C9-4EE0-851C-A640C969967F}</ProjectGuid>
+    <ProjectGuid>{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Hydrous.Hosting</RootNamespace>
-    <AssemblyName>Hydrous.Hosting</AssemblyName>
+    <RootNamespace>SimpleClock</RootNamespace>
+    <AssemblyName>SimpleClock</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -17,11 +17,10 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\Services\SimpleClock\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,25 +35,29 @@
       <HintPath>..\..\lib\log4net\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Credentials.cs" />
-    <Compile Include="HostedServiceName.cs" />
-    <Compile Include="HydrousConfiguration.cs" />
-    <Compile Include="IHostedService.cs" />
-    <Compile Include="IHostingConfigurator.cs" />
-    <Compile Include="Internal\HostingConfigurator.cs" />
-    <Compile Include="Internal\IBuildServiceWrapper.cs" />
-    <Compile Include="Internal\IServiceWrapper.cs" />
-    <Compile Include="Internal\ServiceBootstrapper.cs" />
-    <Compile Include="Internal\ServiceWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WindowsServiceName.cs" />
+    <Compile Include="TimeBroadcaster.cs" />
+    <Compile Include="TimeBroadcasterBootstrapper.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Hydrous.Hosting.Core\Hydrous.Hosting.Core.csproj">
+      <Project>{0003448D-29AA-4E3A-88E6-C14F7FE996A2}</Project>
+      <Name>Hydrous.Hosting.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Hydrous.Hosting\Hydrous.Hosting.csproj">
+      <Project>{2D8678D8-76C9-4EE0-851C-A640C969967F}</Project>
+      <Name>Hydrous.Hosting</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SimpleClock.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

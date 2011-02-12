@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Hydrous.Hosting.FileSystem;
+using System.IO;
 
 namespace Hydrous.Hosting
 {
@@ -10,7 +11,10 @@ namespace Hydrous.Hosting
     {
         public static IServiceController Create()
         {
-            return new ServiceController(new ServiceDirectoryScanner());
+            var currentDirectory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+            var servicesDirectory = currentDirectory.GetDirectories().First(x => string.Equals(x.Name, "Services", StringComparison.CurrentCultureIgnoreCase));
+
+            return new ServiceController(new ServiceDirectoryScanner(servicesDirectory));
         }
     }
 }

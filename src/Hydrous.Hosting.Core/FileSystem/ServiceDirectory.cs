@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace Hydrous.Hosting.FileSystem
 {
     public class ServiceDirectory
     {
-        public ServiceDirectory(string path, string config)
+        public ServiceDirectory(DirectoryInfo folder, FileInfo config)
         {
-            Path = path;
+            Folder = folder;
             ConfigurationFile = config;
         }
 
-        public string Path { get; private set; }
+        public DirectoryInfo Folder { get; private set; }
 
-        public string ConfigurationFile { get; private set; }
+        public FileInfo ConfigurationFile { get; private set; }
     }
 }
