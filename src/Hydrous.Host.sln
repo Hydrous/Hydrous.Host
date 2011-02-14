@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleClock", "SimpleClock\SimpleClock.csproj", "{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hydrous.Host", "Hydrous.Host\Hydrous.Host.csproj", "{BE0FD8C0-7DF7-4199-94C9-918D378C543B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A004F3B7-60AC-4AAB-931C-0059FB30CBCC} = {A004F3B7-60AC-4AAB-931C-0059FB30CBCC}
@@ -14,8 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hydrous.Hosting.Tests", "Hy
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{9863BBEE-9976-43F7-9EB8-9980DE002783}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleClock", "SimpleClock\SimpleClock.csproj", "{A004F3B7-60AC-4AAB-931C-0059FB30CBCC}"
-EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

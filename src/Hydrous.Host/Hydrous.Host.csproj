@@ -109,7 +109,10 @@
     <None Include="..\..\Hydrous.snk">
       <Link>Hydrous.snk</Link>
     </None>
-    <None Include="app.config" />
+    <None Include="log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hydrous.Hosting.Core\Hydrous.Hosting.Core.csproj">

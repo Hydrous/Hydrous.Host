@@ -18,9 +18,15 @@ namespace SimpleClock
     using System.Linq;
     using System.Text;
     using Hydrous.Hosting;
+    using System.IO;
 
     public class TimeBroadcasterBootstrapper : IHostedService<TimeBroadcaster>
     {
+        public TimeBroadcasterBootstrapper()
+        {
+            log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log4net.config")));
+        }
+
         public void Initialize(IHostingConfigurator<TimeBroadcaster> config)
         {
             config.Create(() => new TimeBroadcaster())
