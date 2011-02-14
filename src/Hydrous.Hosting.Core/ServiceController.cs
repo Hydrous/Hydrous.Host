@@ -53,7 +53,7 @@ namespace Hydrous.Hosting
             setup.ConfigurationFile = directory.ConfigurationFile.FullName;
             setup.ApplicationBase = directory.Folder.FullName;
 
-            var domain = AppDomain.CreateDomain("ServiceHost:" + directory.Folder.Name, null, setup);
+            var domain = AppDomain.CreateDomain("ServiceHost." + directory.Folder.Name, null, setup);
             try
             {
                 ServiceBootstrapper bootstrapper = GetBootstrapper(domain);
@@ -87,7 +87,6 @@ namespace Hydrous.Hosting
                 null,
                 null,
                 System.Globalization.CultureInfo.CurrentCulture,
-                null,
                 null
             );
 
