@@ -18,16 +18,16 @@ namespace Hydrous.Hosting
     using System.Linq;
     using System.Text;
     using log4net;
-    using System.Collections.Concurrent;
     using Hydrous.Hosting.FileSystem;
     using Hydrous.Hosting.Internal;
     using System.Reflection;
 
     public class ServiceController : IServiceController
     {
+        static readonly object locker = new object();
         static readonly ILog log = LogManager.GetLogger(typeof(ServiceController));
         private bool disposed;
-        readonly ConcurrentStack<ServiceHost> Services = new ConcurrentStack<ServiceHost>();
+        readonly Stack<ServiceHost> Services = new Stack<ServiceHost>();
         readonly IServiceDirectoryScanner DirectoryScanner;
 
         public ServiceController(IServiceDirectoryScanner directoryScanner)
@@ -37,13 +37,15 @@ namespace Hydrous.Hosting
 
         public void Run()
         {
-            foreach (var serviceDirectory in DirectoryScanner.Scan())
+            lock (locker)
             {
-                CreateAndStartService(serviceDirectory);
+                foreach (var serviceDirectory in DirectoryScanner.Scan())
+                {
+                    CreateAndStartService(serviceDirectory);
+                }
+
+                log.Debug("Running.");
             }
-
-
-            log.Debug("Running.");
         }
 
         private void CreateAndStartService(ServiceDirectory directory)
@@ -72,7 +74,7 @@ namespace Hydrous.Hosting
             }
             catch (Exception ex)
             {
-                log.Error(string.Format("Failed to create bootstrapper for {0} service.",directory.Folder.Name), ex);
+                log.Error(string.Format("Failed to create bootstrapper for {0} service.", directory.Folder.Name), ex);
             }
         }
 
@@ -87,6 +89,7 @@ namespace Hydrous.Hosting
                 null,
                 null,
                 System.Globalization.CultureInfo.CurrentCulture,
+                null,
                 null
             );
 
@@ -95,14 +98,13 @@ namespace Hydrous.Hosting
 
         public void Shutdown()
         {
-            // stop each service that's running
-            // dispose each service
-            while (Services.Count > 0)
+            lock (locker)
             {
-                ServiceHost service;
-                if (Services.TryPop(out service))
+                // stop each service that's running
+                // dispose each service
+                while (Services.Count > 0)
                 {
-                    using (service)
+                    using (var service = Services.Pop())
                     {
                         service.Stop();
                     }
