@@ -20,6 +20,8 @@ namespace Hydrous.Host
     using System.ServiceProcess;
     using log4net;
     using Hydrous.Hosting;
+    using System.IO;
+    using System.Threading;
 
     class Program
     {
@@ -28,7 +30,7 @@ namespace Hydrous.Host
         [LoaderOptimization(LoaderOptimization.MultiDomain)]
         static void Main(string[] args)
         {
-            log4net.Config.XmlConfigurator.Configure();
+            log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log4net.config")));
             using (var controller = ControllerFactory.Create())
             {
                 if (Environment.UserInteractive)
@@ -43,33 +45,49 @@ namespace Hydrous.Host
                 }
             }
 
-            log.Debug("Everything complete. Exiting.");
+            log.Info("All services shutdown. Exiting in 3 seconds.");
             System.Threading.Thread.Sleep(3000);
         }
 
         private static void RunInteractive(string[] args, IServiceController controller)
         {
             controller.Run();
-            bool shutdown = false;
+            var handle = new ManualResetEvent(false);
 
-            while (!shutdown)
+            Console.CancelKeyPress += (s, e) =>
             {
-                Console.WriteLine("Type cls to clear screen, or quit|exit to stop.");
-                string input = Console.ReadLine() ?? "";
-
-                switch (input.ToLowerInvariant())
+                if (e.SpecialKey == ConsoleSpecialKey.ControlC)
                 {
-                    case "cls":
-                        Console.Clear();
-                        break;
-                    case "quit":
-                    case "exit":
-                        shutdown = true;
-                        break;
-                    default:
-                        break;
+                    log.Info("Received Ctrl+C command, stopping service.");
+                    e.Cancel = true;
+                    handle.Set();
                 }
-            }
+            };
+
+            ThreadPool.QueueUserWorkItem(o =>
+            {
+                while (true)
+                {
+                    Console.WriteLine("Type cls to clear screen, or quit|exit to stop.");
+                    string input = (Console.ReadLine() ?? "").ToLowerInvariant();
+
+                    switch (input)
+                    {
+                        case "cls":
+                            Console.Clear();
+                            break;
+                        case "quit":
+                        case "exit":
+                            log.Info(string.Format("Received {0} command, stopping service.", input));
+                            handle.Set();
+                            return;
+                        default:
+                            break;
+                    }
+                }
+            });
+
+            handle.WaitOne();
 
             Console.WriteLine("Shutting down application.");
             controller.Shutdown();

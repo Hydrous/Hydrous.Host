@@ -28,7 +28,6 @@ namespace Hydrous.Hosting.Internal
 
         public ServiceBootstrapper()
         {
-            log4net.Config.XmlConfigurator.Configure();
         }
 
         public void Initialize()
