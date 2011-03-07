@@ -35,12 +35,18 @@ namespace Hydrous.Hosting
             DirectoryScanner = directoryScanner;
         }
 
-        public void Run()
+        public void Run(IStartupArguments args)
         {
             lock (locker)
             {
                 foreach (var serviceDirectory in DirectoryScanner.Scan())
                 {
+                    if (args.AbortStartup)
+                    {
+                        log.Info("Aborting requested, cancelling startup of remaining services.");
+                        return;
+                    }
+
                     CreateAndStartService(serviceDirectory);
                 }
 
@@ -96,7 +102,7 @@ namespace Hydrous.Hosting
             return bootstrapper;
         }
 
-        public void Shutdown()
+        public void Shutdown(IShutdownArguments args)
         {
             lock (locker)
             {

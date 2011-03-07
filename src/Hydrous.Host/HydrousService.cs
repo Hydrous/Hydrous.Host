@@ -25,6 +25,8 @@ namespace Hydrous.Host
     {
         static readonly ILog log = LogManager.GetLogger(typeof(HydrousService));
         readonly IServiceController Controller;
+        readonly IStartupArguments StartupArgs = new DefaultStartupArguments();
+        readonly IShutdownArguments ShutdownArgs = new DefaultShutdownArguments();
 
         public HydrousService(IServiceController controller)
         {
@@ -34,19 +36,21 @@ namespace Hydrous.Host
         protected override void OnStart(string[] args)
         {
             log.Debug("Received start command from windows service host.");
-            Controller.Run();
+            Controller.Run(StartupArgs);
         }
 
         protected override void OnStop()
         {
             log.Debug("Received stop command from windows service host.");
-            Controller.Shutdown();
+            StartupArgs.AbortStartup = true;
+            Controller.Shutdown(ShutdownArgs);
         }
 
         protected override void OnShutdown()
         {
             log.Debug("Received shutdown command from windows service host.");
-            Controller.Shutdown();
+            StartupArgs.AbortStartup = true;
+            Controller.Shutdown(ShutdownArgs);
         }
     }
 }

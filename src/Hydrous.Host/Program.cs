@@ -45,24 +45,27 @@ namespace Hydrous.Host
                 }
             }
 
-            log.Info("All services shutdown. Exiting in 3 seconds.");
-            System.Threading.Thread.Sleep(3000);
+            log.Info("All services shutdown.");
+            Environment.ExitCode = 0;
         }
 
         private static void RunInteractive(string[] args, IServiceController controller)
         {
-            controller.Run();
+            var startupArguments = new DefaultStartupArguments();
             var handle = new ManualResetEvent(false);
 
             Console.CancelKeyPress += (s, e) =>
             {
                 if (e.SpecialKey == ConsoleSpecialKey.ControlC)
                 {
-                    log.Info("Received Ctrl+C command, stopping service.");
+                    log.Info("Received Ctrl+C command, stopping services.");
                     e.Cancel = true;
                     handle.Set();
+                    startupArguments.AbortStartup = true;
                 }
             };
+
+            controller.Run(startupArguments);
 
             ThreadPool.QueueUserWorkItem(o =>
             {
@@ -82,6 +85,7 @@ namespace Hydrous.Host
                             handle.Set();
                             return;
                         default:
+                            Console.WriteLine("'" + input + "' is not a valid operation.");
                             break;
                     }
                 }
@@ -90,7 +94,8 @@ namespace Hydrous.Host
             handle.WaitOne();
 
             Console.WriteLine("Shutting down application.");
-            controller.Shutdown();
+            var shutdownArguments = new DefaultShutdownArguments();
+            controller.Shutdown(shutdownArguments);
         }
     }
 }

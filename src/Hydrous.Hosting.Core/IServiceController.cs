@@ -20,7 +20,7 @@ namespace Hydrous.Hosting
 
     public interface IServiceController : IDisposable
     {
-        void Run();
-        void Shutdown();
+        void Run(IStartupArguments args);
+        void Shutdown(IShutdownArguments args);
     }
 }

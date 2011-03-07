@@ -48,10 +48,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ControllerFactory.cs" />
+    <Compile Include="DefaultShutdownArguments.cs" />
+    <Compile Include="DefaultStartupArguments.cs" />
     <Compile Include="FileSystem\IServiceDirectoryScanner.cs" />
     <Compile Include="FileSystem\ServiceDirectory.cs" />
     <Compile Include="FileSystem\ServiceDirectoryScanner.cs" />
+    <Compile Include="IStartupArguments.cs" />
     <Compile Include="IServiceController.cs" />
+    <Compile Include="IShutdownArguments.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceController.cs" />
   </ItemGroup>
