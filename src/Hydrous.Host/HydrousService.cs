@@ -36,12 +36,14 @@ namespace Hydrous.Host
         protected override void OnStart(string[] args)
         {
             log.Debug("Received start command from windows service host.");
+            this.RequestAdditionalTime((int)TimeSpan.FromSeconds(60).TotalMilliseconds);
             Controller.Run(StartupArgs);
         }
 
         protected override void OnStop()
         {
             log.Debug("Received stop command from windows service host.");
+            this.RequestAdditionalTime((int)TimeSpan.FromSeconds(60).TotalMilliseconds);
             StartupArgs.AbortStartup = true;
             Controller.Shutdown(ShutdownArgs);
         }

@@ -61,7 +61,10 @@ namespace Hydrous.Hosting
             setup.ConfigurationFile = directory.ConfigurationFile.FullName;
             setup.ApplicationBase = directory.Folder.FullName;
 
-            var domain = AppDomain.CreateDomain("ServiceHost." + directory.Folder.Name, null, setup);
+
+            var domainName = "ServiceHost." + directory.Folder.Name;
+            log.Info(string.Format("Creating {0} app domain", domainName));
+            var domain = AppDomain.CreateDomain(domainName, null, setup);
             try
             {
                 ServiceBootstrapper bootstrapper = GetBootstrapper(domain);
@@ -69,23 +72,27 @@ namespace Hydrous.Hosting
                 var service = new ServiceHost(directory.Folder.Name, domain, bootstrapper);
                 try
                 {
+                    log.Info(string.Format("[{0}] Initializing service.", domainName));
                     service.Initialize();
+                    log.Info(string.Format("[{0}] Starting service.", domainName));
                     service.Start();
+                    log.Debug(string.Format("[{0}] Registering service.", domainName));
                     Services.Push(service);
                 }
                 catch (Exception ex)
                 {
-                    log.Error(string.Format("Failed to initialize and start {0} service.", service.Name), ex);
+                    log.Error(string.Format("[{0}] Failed to initialize and start service.", service.Name), ex);
                 }
             }
             catch (Exception ex)
             {
-                log.Error(string.Format("Failed to create bootstrapper for {0} service.", directory.Folder.Name), ex);
+                log.Error(string.Format("[{0}] Failed to create bootstrapper for service.", directory.Folder.Name), ex);
             }
         }
 
         private static ServiceBootstrapper GetBootstrapper(AppDomain domain)
         {
+            log.Debug(string.Format("[{0}] Creating bootstrapper.", domain.FriendlyName));
             var bootstrapperType = typeof(ServiceBootstrapper);
             var bootstrapper = (ServiceBootstrapper)domain.CreateInstanceAndUnwrap(
                 bootstrapperType.Assembly.FullName,
@@ -110,9 +117,30 @@ namespace Hydrous.Hosting
                 // dispose each service
                 while (Services.Count > 0)
                 {
-                    using (var service = Services.Pop())
+                    string serviceName = null;
+                    try
                     {
-                        service.Stop();
+                        using (var service = Services.Pop())
+                        {
+                            serviceName = service.Name;
+                            try
+                            {
+                                log.Info(string.Format("[{0}] Stopping service.", serviceName));
+                                service.Stop();
+                            }
+                            catch (Exception ex)
+                            {
+                                log.Error(string.Format("[{0}] Failed to stop service.", serviceName), ex);
+                            }
+                            finally
+                            {
+                                log.Info(string.Format("[{0}] Disposing service.", serviceName));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error(string.Format("[{0}] Failed to dispose service.", serviceName ?? "(unknown)"), ex);
                     }
                 }
             }
