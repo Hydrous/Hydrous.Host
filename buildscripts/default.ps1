@@ -1,5 +1,5 @@
 properties {
-    $version = "1.0.0.0"
+    $version = "1.1.0"
     $basePath = resolve-path ..\
     $tools = "$basePath\tools"
     $build = "$basePath\build"
