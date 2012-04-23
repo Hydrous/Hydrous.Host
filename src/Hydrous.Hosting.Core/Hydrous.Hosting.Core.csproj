@@ -50,6 +50,7 @@
     <Compile Include="ControllerFactory.cs" />
     <Compile Include="DefaultShutdownArguments.cs" />
     <Compile Include="DefaultStartupArguments.cs" />
+    <Compile Include="DisposableExtensions.cs" />
     <Compile Include="FileSystem\IServiceDirectoryScanner.cs" />
     <Compile Include="FileSystem\ServiceDirectory.cs" />
     <Compile Include="FileSystem\ServiceDirectoryScanner.cs" />

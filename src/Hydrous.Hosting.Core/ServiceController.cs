@@ -54,6 +54,8 @@ namespace Hydrous.Hosting
                 }
             }
 
+            handles.DisposeAll();
+
             log.Info("Services running.");
             foreach (var host in Hosts)
                 log.Info(string.Format("{0}: {1}", host.Name, host.Status));
@@ -75,7 +77,14 @@ namespace Hydrous.Hosting
                 }
                 finally
                 {
-                    handle.Set();
+                    try
+                    {
+                        handle.Set();
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error("Failed to set handle signalling host started.", ex);
+                    }
                 }
             })
             {
@@ -94,6 +103,7 @@ namespace Hydrous.Hosting
                     log.Error("All services failed to stop in the alotted time.");
             }
 
+            handles.DisposeAll();
             log.Debug("Shutdown.");
         }
 
@@ -113,7 +123,15 @@ namespace Hydrous.Hosting
                 }
                 finally
                 {
-                    handle.Set();
+                    try
+                    {
+                        handle.Set();
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error("Failed to set handle signalling host stopped.", ex);
+                    }
+
                     Hosts.Remove(controller);
                 }
             })
