@@ -20,10 +20,12 @@ task Clean {
 
 task Version {
     $revision = Get-Git-Commit
-    dir "$basePath\src" -recurse -filter "AssemblyInfo.cs" | foreach {
+    dir "$basePath\src\" -filter "*.csproj" -recurse | foreach {
+        $currentPath = $_.Directory.FullName;
+        $target = "$currentPath\Properties\AssemblyInfo.cs"
         Generate-Assembly-Info `
-            -title $_.Directory.Directory.Name `
-            -file $_.FullName `
+            -title $_.Directory.Name `
+            -file $target `
             -product "Hydrous.Host" `
             -version $version `
             -revision $revision `

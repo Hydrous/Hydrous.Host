@@ -11,7 +11,6 @@ function Get-File-Exists-On-Path
 function Get-Git-Commit
 {
 	if ((Get-File-Exists-On-Path "git.exe")){
-        write-host "getting git log"
 		$gitLog = git log --oneline -1
 		return $gitLog.Split(' ')[0]
 	}
@@ -36,11 +35,8 @@ param(
   $asmInfo = @"
 using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: CLSCompliantAttribute(false)]
-[assembly: ComVisibleAttribute(false)]
 [assembly: AssemblyTitleAttribute("$title")]
 [assembly: AssemblyCompanyAttribute("$company")]
 [assembly: AssemblyProductAttribute("$product")]
@@ -55,7 +51,7 @@ using System.Runtime.InteropServices;
 	if ([System.IO.Directory]::Exists($dir) -eq $false)
 	{
 		Write-Host "Creating directory $dir"
-		[System.IO.Directory]::CreateDirectory($dir)
+		[System.IO.Directory]::CreateDirectory($dir) | out-null
 	}
 	Write-Host "[$revision] $file"
     New-Item -type file $file -Force | out-null
