@@ -1,12 +1,14 @@
 **/*.suo
 **/*.user
 **/*.sln*
+AssemblyInfo.cs
 bin
 obj
 _ReSharper*
 dist
 output
 build
+release
 
 *.csproj.user
 

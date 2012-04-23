@@ -69,7 +69,8 @@ namespace Hydrous.Host
 
             ThreadPool.QueueUserWorkItem(o =>
             {
-                while (true)
+                bool run = true;
+                while (run)
                 {
                     Console.WriteLine("Type cls to clear screen, or quit|exit to stop.");
                     string input = (Console.ReadLine() ?? "").ToLowerInvariant();
@@ -81,9 +82,13 @@ namespace Hydrous.Host
                             break;
                         case "quit":
                         case "exit":
+                        {
+                            // stop running
+                            run = false;
                             log.Info(string.Format("Received {0} command, stopping service.", input));
                             handle.Set();
-                            return;
+                            break;
+                        }
                         default:
                             Console.WriteLine("'" + input + "' is not a valid operation.");
                             break;

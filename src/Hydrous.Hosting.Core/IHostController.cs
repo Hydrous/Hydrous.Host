@@ -1,4 +1,4 @@
-﻿// Copyright 2007-2010 The Apache Software Foundation.
+// Copyright 2007-2010 The Apache Software Foundation.
 //  
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -16,16 +16,17 @@ namespace Hydrous.Hosting
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
 
-    public interface IStartupArguments
+    interface IHostController : IDisposable
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether the startup should be aborted.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if startup should be aborted; otherwise, <c>false</c>.
-        /// </value>
-        bool AbortStartup { get; set; }
+        string Name { get; }
+
+        HostStatus Status { get; }
+
+        void Initialize();
+
+        void Start(IStartupArguments arguments);
+
+        void Stop(IShutdownArguments arguments);
     }
 }

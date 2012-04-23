@@ -18,14 +18,13 @@ namespace Hydrous.Hosting
     using System.Linq;
     using System.Text;
 
-    public interface IStartupArguments
+    enum HostStatus
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether the startup should be aborted.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if startup should be aborted; otherwise, <c>false</c>.
-        /// </value>
-        bool AbortStartup { get; set; }
+        Created,
+        Initialized,
+        Starting,
+        Running,
+        Stopping,
+        Stopped
     }
 }

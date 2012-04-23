@@ -27,7 +27,7 @@ namespace Hydrous.Hosting
             var currentDirectory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
             var servicesDirectory = currentDirectory.GetDirectories().First(x => string.Equals(x.Name, "Services", StringComparison.CurrentCultureIgnoreCase));
 
-            return new ServiceController(new ServiceDirectoryScanner(servicesDirectory));
+            return new ServiceController(new ServiceDirectoryScanner(servicesDirectory), new HostControllerFactory());
         }
     }
 }

@@ -17,15 +17,18 @@ namespace Hydrous.Hosting
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using Hydrous.Hosting.FileSystem;
 
-    public interface IStartupArguments
+    interface IHostControllerFactory
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether the startup should be aborted.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if startup should be aborted; otherwise, <c>false</c>.
-        /// </value>
-        bool AbortStartup { get; set; }
+        IHostController CreateController(IServiceController controller, ServiceDirectory directory);
+    }
+
+    class HostControllerFactory : IHostControllerFactory
+    {
+        public IHostController CreateController(IServiceController controller, ServiceDirectory directory)
+        {
+            return new HostController(controller, directory);
+        }
     }
 }
