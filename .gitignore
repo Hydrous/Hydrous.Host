@@ -1,6 +1,7 @@
 **/*.suo
 **/*.user
 **/*.sln*
+**/*AssemblyInfo.cs
 bin
 obj
 _ReSharper*

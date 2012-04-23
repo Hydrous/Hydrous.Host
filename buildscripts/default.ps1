@@ -1,11 +1,12 @@
 properties {
-    $assemblyVersion = "1.0.0.0"
-    $fileVersion = "1.0.0.0"
+    $version = "1.0.0.0"
     $basePath = resolve-path ..\
     $tools = "$basePath\tools"
     $build = "$basePath\build"
     $release = "$basePath\release"
 }
+
+include .\psake-ext.ps1
 
 task default
 
@@ -18,7 +19,17 @@ task Clean {
 }
 
 task Version {
-    
+    $revision = Get-Git-Commit
+    dir "$basePath\src" -recurse -filter "AssemblyInfo.cs" | foreach {
+        Generate-Assembly-Info `
+            -title $_.Directory.Directory.Name `
+            -file $_.FullName `
+            -product "Hydrous.Host" `
+            -version $version `
+            -revision $revision `
+            -copyright "Copyright Darren Kopp, Digital Business Integration 2011-2012" `
+            -company "Digital Business Integration"
+    };
 }
 
 task Build {
