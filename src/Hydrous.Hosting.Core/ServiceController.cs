@@ -21,131 +21,108 @@ namespace Hydrous.Hosting
     using Hydrous.Hosting.FileSystem;
     using Hydrous.Hosting.Internal;
     using System.Reflection;
+    using System.Threading;
 
-    public class ServiceController : IServiceController
+    class ServiceController : IServiceController
     {
-        static readonly object locker = new object();
         static readonly ILog log = LogManager.GetLogger(typeof(ServiceController));
-        private bool disposed;
-        readonly Stack<ServiceHost> Services = new Stack<ServiceHost>();
-        readonly IServiceDirectoryScanner DirectoryScanner;
 
-        public ServiceController(IServiceDirectoryScanner directoryScanner)
+        readonly ICollection<IHostController> Hosts = new HashSet<IHostController>();
+        readonly IServiceDirectoryScanner DirectoryScanner;
+        readonly IHostControllerFactory HostFactory;
+        bool disposed;
+
+        public ServiceController(IServiceDirectoryScanner directoryScanner, IHostControllerFactory hostFactory)
         {
+            HostFactory = hostFactory;
             DirectoryScanner = directoryScanner;
         }
 
         public void Run(IStartupArguments args)
         {
-            lock (locker)
+            // create hosts for directories found by scanner
+            foreach (var host in DirectoryScanner.Scan().Select(directory => HostFactory.CreateController(this, directory)))
+                Hosts.Add(host);
+
+            // start and wait for hosts
+            var handles = Hosts.Select(host => StartHost(host, args)).ToArray();
+            if (handles.Length != 0)
             {
-                foreach (var serviceDirectory in DirectoryScanner.Scan())
+                if (!WaitHandle.WaitAll(handles, TimeSpan.FromSeconds(120)))
                 {
-                    if (args.AbortStartup)
-                    {
-                        log.Info("Aborting requested, cancelling startup of remaining services.");
-                        return;
-                    }
-
-                    CreateAndStartService(serviceDirectory);
+                    log.Warn("Services have taken longer than 2 minutes to start.");
                 }
-
-                log.Debug("Running.");
             }
+
+            log.Info("Services running.");
+            foreach (var host in Hosts)
+                log.Info(string.Format("{0}: {1}", host.Name, host.Status));
         }
 
-        private void CreateAndStartService(ServiceDirectory directory)
+        private WaitHandle StartHost(IHostController host, IStartupArguments args)
         {
-            var setup = AppDomain.CurrentDomain.SetupInformation;
-            setup.ShadowCopyFiles = "true";
-            setup.ConfigurationFile = directory.ConfigurationFile.FullName;
-            setup.ApplicationBase = directory.Folder.FullName;
-
-
-            var domainName = "ServiceHost." + directory.Folder.Name;
-            log.Info(string.Format("Creating {0} app domain", domainName));
-            var domain = AppDomain.CreateDomain(domainName, null, setup);
-            try
+            var handle = new ManualResetEvent(false);
+            new Thread(() =>
             {
-                ServiceBootstrapper bootstrapper = GetBootstrapper(domain);
-
-                var service = new ServiceHost(directory.Folder.Name, domain, bootstrapper);
                 try
                 {
-                    log.Info(string.Format("[{0}] Initializing service.", domainName));
-                    service.Initialize();
-                    log.Info(string.Format("[{0}] Starting service.", domainName));
-                    service.Start();
-                    log.Debug(string.Format("[{0}] Registering service.", domainName));
-                    Services.Push(service);
+                    host.Initialize();
+                    host.Start(args);
                 }
                 catch (Exception ex)
                 {
-                    log.Error(string.Format("[{0}] Failed to initialize and start service.", service.Name), ex);
+                    log.Error(string.Format("Failed to start '{0}'", host.Name), ex);
                 }
-            }
-            catch (Exception ex)
+                finally
+                {
+                    handle.Set();
+                }
+            })
             {
-                log.Error(string.Format("[{0}] Failed to create bootstrapper for service.", directory.Folder.Name), ex);
-            }
-        }
+                IsBackground = true
+            }.Start();
 
-        private static ServiceBootstrapper GetBootstrapper(AppDomain domain)
-        {
-            log.Debug(string.Format("[{0}] Creating bootstrapper.", domain.FriendlyName));
-            var bootstrapperType = typeof(ServiceBootstrapper);
-            var bootstrapper = (ServiceBootstrapper)domain.CreateInstanceAndUnwrap(
-                bootstrapperType.Assembly.FullName,
-                bootstrapperType.FullName,
-                true,
-                BindingFlags.Default,
-                null,
-                null,
-                System.Globalization.CultureInfo.CurrentCulture,
-                null,
-                null
-            );
-
-            return bootstrapper;
+            return handle;
         }
 
         public void Shutdown(IShutdownArguments args)
         {
-            lock (locker)
+            var handles = Hosts.ToArray().Select(host => ShutdownHost(host, args)).ToArray();
+            if (handles.Length > 0)
             {
-                // stop each service that's running
-                // dispose each service
-                while (Services.Count > 0)
-                {
-                    string serviceName = null;
-                    try
-                    {
-                        using (var service = Services.Pop())
-                        {
-                            serviceName = service.Name;
-                            try
-                            {
-                                log.Info(string.Format("[{0}] Stopping service.", serviceName));
-                                service.Stop();
-                            }
-                            catch (Exception ex)
-                            {
-                                log.Error(string.Format("[{0}] Failed to stop service.", serviceName), ex);
-                            }
-                            finally
-                            {
-                                log.Info(string.Format("[{0}] Disposing service.", serviceName));
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        log.Error(string.Format("[{0}] Failed to dispose service.", serviceName ?? "(unknown)"), ex);
-                    }
-                }
+                if (!WaitHandle.WaitAll(handles, TimeSpan.FromSeconds(100)))
+                    log.Error("All services failed to stop in the alotted time.");
             }
 
             log.Debug("Shutdown.");
+        }
+
+        WaitHandle ShutdownHost(IHostController controller, IShutdownArguments args)
+        {
+            var handle = new ManualResetEvent(false);
+            new Thread(() =>
+            {
+                try
+                {
+                    using (controller)
+                        controller.Stop(args);
+                }
+                catch (Exception ex)
+                {
+                    log.Error(string.Format("Failed to shutdown host '{0}'", controller.Name), ex);
+                }
+                finally
+                {
+                    handle.Set();
+                    Hosts.Remove(controller);
+                }
+            })
+            {
+                IsBackground = true
+            }
+            .Start();
+
+            return handle;
         }
 
         public void Dispose()
@@ -163,56 +140,6 @@ namespace Hydrous.Hosting
             if (disposing)
             {
                 log.Debug("Disposed.");
-            }
-        }
-
-        private class ServiceHost : IDisposable
-        {
-            bool disposed;
-            static readonly ILog log = LogManager.GetLogger(typeof(ServiceHost));
-            public readonly string Name;
-            readonly AppDomain Domain;
-            readonly ServiceBootstrapper Bootstrapper;
-
-            public ServiceHost(string name, AppDomain domain, ServiceBootstrapper bootstrapper)
-            {
-                Name = name;
-                Domain = domain;
-                Bootstrapper = bootstrapper;
-            }
-
-            public void Initialize()
-            {
-                Bootstrapper.Initialize();
-            }
-
-            public void Start()
-            {
-                Bootstrapper.Start();
-            }
-
-            public void Stop()
-            {
-                Bootstrapper.Stop();
-            }
-
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            private void Dispose(bool disposing)
-            {
-                if (disposed)
-                    return;
-
-                disposed = true;
-                if (disposing)
-                {
-                    Bootstrapper.Dispose();
-                    log.Debug("Disposed.");
-                }
             }
         }
     }

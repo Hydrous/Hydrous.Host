@@ -53,6 +53,12 @@
     <Compile Include="FileSystem\IServiceDirectoryScanner.cs" />
     <Compile Include="FileSystem\ServiceDirectory.cs" />
     <Compile Include="FileSystem\ServiceDirectoryScanner.cs" />
+    <Compile Include="HostController.cs" />
+    <Compile Include="HostControllerFactory.cs" />
+    <Compile Include="HostStatus.cs" />
+    <Compile Include="IHostController.cs">
+      <DependentUpon>HostController.cs</DependentUpon>
+    </Compile>
     <Compile Include="IStartupArguments.cs" />
     <Compile Include="IServiceController.cs" />
     <Compile Include="IShutdownArguments.cs" />
