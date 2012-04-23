@@ -18,8 +18,11 @@ task Clean {
     mkdir $release | out-null
 }
 
-task Version {
-    $revision = Get-Git-Commit
+task Init {
+    $env:revision = Get-Git-Commit
+}
+
+task Version -depends Init {
     dir "$basePath\src\" -filter "*.csproj" -recurse | foreach {
         $currentPath = $_.Directory.FullName;
         $target = "$currentPath\Properties\AssemblyInfo.cs"
@@ -28,7 +31,7 @@ task Version {
             -file $target `
             -product "Hydrous.Host" `
             -version $version `
-            -revision $revision `
+            -revision $env:revision `
             -copyright "Copyright Darren Kopp, Digital Business Integration 2011-2012" `
             -company "Digital Business Integration"
     };
@@ -55,7 +58,7 @@ task Zip {
     $e = $zipfile.AddFile("$build\Hydrous.Hosting.dll","");
     $e = $zipfile.AddFile("$build\Hydrous.Hosting.pdb","");
     $e = $zipfile.AddFile("$build\log4net.config","");
-    $zipfile.Save("$release\$fileVersion.zip");
+    $zipfile.Save("$release\$version.$env:revision.zip");
     $zipfile.Dispose();
 }
 

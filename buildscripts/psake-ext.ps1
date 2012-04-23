@@ -50,10 +50,9 @@ using System.Runtime.InteropServices;
 	$dir = [System.IO.Path]::GetDirectoryName($file)
 	if ([System.IO.Directory]::Exists($dir) -eq $false)
 	{
-		Write-Host "Creating directory $dir"
 		[System.IO.Directory]::CreateDirectory($dir) | out-null
 	}
-	Write-Host "[$revision] $file"
+
     New-Item -type file $file -Force | out-null
 	$asmInfo | Out-File -Encoding utf8 $file
 }
